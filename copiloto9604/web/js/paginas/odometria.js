@@ -5,6 +5,7 @@ import { cfg } from '../config.js';
 import { drawPolyline, drawRobot, FieldView, parseBotpose, parsePose, parsePoses, poseLikeTopics } from '../campo.js';
 import { nt } from '../nt.js';
 import { btn, clamp, codeBlock, cssVar, deg, field, fmt, h, icon, numInput, textInput, toast, wrapAngle } from '../util.js';
+import { mainLimelightTable, visibleTags } from '../visao.js';
 
 let root, fv, readout, layersEl, driftCanvas;
 let trail = [];
@@ -16,7 +17,7 @@ let settingPose = null;      // { start: {x,y}, end: {x,y} } enquanto arrasta pa
 let poseTool = false;
 const show = { trail: true, vision: true, mt1: false, target: true, active: true, objects: true };
 
-const llName = () => (cfg.get('limelights', [])[0] || {}).nome || 'limelight';
+const llName = () => mainLimelightTable();
 const poseTopic = () => cfg.get('topicos.pose', '/SmartDashboard/Field/Robot');
 
 function currentPose() {
@@ -52,15 +53,13 @@ function draw(ctx) {
   const seen = new Set();
   if (show.vision) {
     const v = visionPose();
-    if (v) {
-      drawRobot(ctx, fv, v.pose, { ghost: true, color: '#22c55e', label: 'MegaTag2' });
-      // linhas até as tags vistas
-      for (const f of v.fiducials) {
-        seen.add(f.id);
-        const tag = cfg.field.tags.find((t) => t.id === f.id);
-        if (!tag) continue;
-        drawPolyline(ctx, fv, [v.pose, tag], { color: '#22c55e', width: 1.2, alpha: 0.6, dash: [4, 4] });
-      }
+    if (v) drawRobot(ctx, fv, v.pose, { ghost: true, color: '#22c55e', label: 'MegaTag2' });
+    // linhas até as tags vistas (saindo da pose pela visão, ou da odometria se não houver)
+    const from = (v || visionPose('botpose_wpiblue') || {}).pose || p;
+    for (const f of visibleTags(llName())) {
+      seen.add(f.id);
+      const tag = cfg.field.tags.find((t) => t.id === f.id);
+      if (tag && from) drawPolyline(ctx, fv, [from, tag], { color: '#22c55e', width: 1.2, alpha: 0.6, dash: [4, 4] });
     }
   }
   if (show.mt1) {
@@ -125,8 +124,9 @@ function renderReadout() {
     const erot = Math.abs(deg(wrapAngle(v.pose.rot - p.rot)));
     items.push(statEl('Erro p/ visão', fmt(err * 100, 0), 'cm', err > 0.3 ? 'bad' : err > 0.1 ? 'warn' : 'ok'));
     items.push(statEl('Erro ângulo', fmt(erot, 1), '°', erot > 5 ? 'bad' : erot > 2 ? 'warn' : 'ok'));
-    items.push(statEl('Tags vistas', String(v.tagCount), ''));
-  } else items.push(statEl('Visão', 'sem tags', ''));
+  }
+  const tags = visibleTags(llName());
+  items.push(statEl('Tags vistas', tags.length ? tags.map((t) => t.id).join(' ') : 'nenhuma', ''));
   readout.replaceChildren(...items);
   drawDrift();
 }

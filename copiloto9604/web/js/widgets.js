@@ -2,10 +2,11 @@
 // configuração é gerado a partir delas) e cria o conteúdo dentro do widget.
 
 import { cfg } from './config.js';
-import { drawPolyline, drawRobot, FieldView, parseBotpose, parsePose, parsePoses } from './campo.js';
+import { drawPolyline, drawRobot, FieldView, parsePose, parsePoses } from './campo.js';
 import { events } from './eventos.js';
 import { MODE_LABEL, nt } from './nt.js';
 import { clamp, cssVar, deg, fitCanvas, fmt, fmtTime, h, icon, rad } from './util.js';
+import { resolveLimelight, visibleTags, visionPoses } from './visao.js';
 
 const SERIES = ['--accent', '--cyan', '--purple', '--green'];
 
@@ -23,7 +24,9 @@ function watcher(getTopic, fn) {
   };
 }
 
-function llName(w) { return w.cfg.limelight || (cfg.get('limelights', [])[0] || {}).nome || 'limelight'; }
+const llConfigured = (w) => w.cfg.limelight || (cfg.get('limelights', [])[0] || {}).nome || 'limelight';
+// tabela onde a Limelight publica de verdade (aguenta nome configurado errado)
+function llName(w) { return resolveLimelight(llConfigured(w)).table; }
 
 export const WIDGETS = {
   numero: {
@@ -302,8 +305,9 @@ export const WIDGETS = {
         }
         if (w.cfg.rastro !== false) drawPolyline(ctx, fv, trail, { color: cssVar('--accent'), width: 2, alpha: 0.45 });
         if (w.cfg.visao !== false) {
-          const bp = parseBotpose(nt.get(`/${llName(w)}/botpose_orb_wpiblue`));
-          if (bp && bp.pose) drawRobot(ctx, fv, bp.pose, { ghost: true, color: cssVar('--green') });
+          const { mt1, mt2 } = visionPoses(llName(w));
+          const v = mt2 || mt1;
+          if (v) drawRobot(ctx, fv, v.pose, { ghost: true, color: cssVar('--green') });
         }
         drawRobot(ctx, fv, parsePose(nt.get(topic()), topic()), {});
       });
@@ -436,8 +440,9 @@ export const WIDGETS = {
       return {
         update() {
           const n = llName(w);
-          const ll = (cfg.get('limelights', []) || []).find((l) => l.nome === n) || {};
-          drawTarget(canvas, { tv: nt.get(`/${n}/tv`), tx: nt.get(`/${n}/tx`), ty: nt.get(`/${n}/ty`), ta: nt.get(`/${n}/ta`), tid: nt.get(`/${n}/tid`) }, ll.fovH || 62.5, ll.fovV || 48.9);
+          const list = cfg.get('limelights', []) || [];
+          const ll = list.find((l) => l.nome === llConfigured(w)) || list[0] || {};
+          drawTarget(canvas, { tv: nt.get(`/${n}/tv`), tx: nt.get(`/${n}/tx`), ty: nt.get(`/${n}/ty`), ta: nt.get(`/${n}/ta`), tid: nt.get(`/${n}/tid`), tags: visibleTags(n) }, ll.fovH || 62.5, ll.fovV || 48.9);
         },
       };
     },
@@ -676,19 +681,38 @@ export function drawTarget(canvas, d, fovH, fovV) {
   ctx.stroke();
   ctx.setLineDash([]);
   const has = truthy(d.tv);
+  const tags = (d.tags || []).filter((t) => isNum(t.txnc) && isNum(t.tync));
+  const primary = isNum(d.tid) && d.tid >= 0 ? Math.round(d.tid) : null;
+  // cada AprilTag vista: caixa + número
+  for (const t of tags) {
+    const px = x0 + bw / 2 + (t.txnc / (fovH / 2)) * (bw / 2);
+    const py = y0 + bh / 2 - (t.tync / (fovV / 2)) * (bh / 2);
+    const r = clamp(Math.sqrt(Math.max(0, t.ta || 0) / 100 * bw * bh) / 2, 5, bw * 0.2);
+    const main = t.id === primary;
+    ctx.strokeStyle = main ? '#22c55e' : 'rgba(34,197,94,.6)';
+    ctx.lineWidth = main ? 2.5 : 1.5;
+    ctx.strokeRect(px - r, py - r, r * 2, r * 2);
+    ctx.fillStyle = ctx.strokeStyle;
+    ctx.font = `700 ${main ? 12 : 11}px ui-monospace, monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(String(t.id), px, py - r - 4);
+  }
   if (has && isNum(d.tx) && isNum(d.ty)) {
     const px = x0 + bw / 2 + (d.tx / (fovH / 2)) * (bw / 2);
     const py = y0 + bh / 2 - (d.ty / (fovV / 2)) * (bh / 2);
-    const r = clamp(Math.sqrt(Math.max(0, d.ta || 0)) * bw * 0.04, 5, bw * 0.2);
     ctx.strokeStyle = '#22c55e';
     ctx.lineWidth = 2;
-    ctx.strokeRect(px - r, py - r, r * 2, r * 2);
+    if (!tags.length) {
+      const r = clamp(Math.sqrt(Math.max(0, d.ta || 0)) * bw * 0.04, 5, bw * 0.2);
+      ctx.strokeRect(px - r, py - r, r * 2, r * 2);
+    }
     ctx.beginPath(); ctx.moveTo(x0 + bw / 2, y0 + bh / 2); ctx.lineTo(px, py); ctx.stroke();
     ctx.fillStyle = '#22c55e';
     ctx.font = '600 11px ui-monospace, monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`${isNum(d.tid) && d.tid >= 0 ? 'tag ' + d.tid + '  ' : ''}tx ${d.tx.toFixed(1)}°  ty ${d.ty.toFixed(1)}°`, x0 + 6, y0 + 14);
-  } else {
+    const ids = tags.length > 1 ? `tags ${tags.map((t) => t.id).join(', ')}  ` : primary != null ? `tag ${primary}  ` : '';
+    ctx.fillText(`${ids}tx ${d.tx.toFixed(1)}°  ty ${d.ty.toFixed(1)}°`, x0 + 6, y0 + 14);
+  } else if (!tags.length) {
     ctx.fillStyle = cssVar('--faint');
     ctx.font = '600 12px system-ui';
     ctx.textAlign = 'center';

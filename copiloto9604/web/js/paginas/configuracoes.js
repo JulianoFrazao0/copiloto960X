@@ -3,11 +3,13 @@
 
 import { cfg } from '../config.js';
 import { nt } from '../nt.js';
+import { detectLimelights, hasLimelight } from '../visao.js';
 import {
   api, btn, checkInput, codeBlock, downloadFile, field, h, icon, numInput, pickFile, selectInput, textInput, toast,
 } from '../util.js';
 
 let root, body, statusEl;
+let llStatus = [];  // linhas de "recebendo dados?" de cada Limelight, atualizadas ao vivo
 
 const FOV = [['59.6x49.7', 'Limelight 2/2+ (59,6° × 49,7°)'], ['62.5x48.9', 'Limelight 3 (62,5° × 48,9°)'], ['82x56.2', 'Limelight 3G / 4 (82° × 56,2°)']];
 
@@ -99,16 +101,45 @@ function ppCard() {
 function llCard() {
   const list = cfg.get('limelights', []) || [];
   const save = () => { cfg.set('limelights', list); };
-  const rows = list.map((l, i) => h('div', { class: 'mini-item' },
-    h('div', { class: 'grid3' },
-      field('Nome (tabela NT)', textInput(l.nome, (v) => { l.nome = v.trim() || 'limelight'; save(); }, { sm: true })),
-      field('IP / host', textInput(l.host, (v) => { l.host = v.trim(); save(); }, { sm: true, placeholder: '10.96.4.11' })),
-      field('Modelo (campo de visão)', selectInput(`${l.fovH}x${l.fovV}`, FOV, (v) => { const [a, b] = v.split('x').map(Number); l.fovH = a; l.fovV = b; save(); }, { sm: true }))),
-    list.length > 1 ? btn('Remover', () => { list.splice(i, 1); save(); render(); }, { cls: 'sm ghost danger', icon: 'trash' }) : null));
-  return card('Limelights', 'limelight', 'O nome é o mesmo configurado na interface da Limelight (padrão "limelight"; com várias: "limelight-frente", etc.).',
+  llStatus = [];
+  const dl = h('datalist', { id: 'll-detectadas' }, detectLimelights().map((t) => h('option', { value: t })));
+  const rows = list.map((l, i) => {
+    const status = h('div', { class: 'row wrap', style: { gap: '6px', fontSize: '12px' } });
+    llStatus.push({ el: status, key: '', name: () => l.nome, use: (t) => { l.nome = t; save(); render(); } });
+    return h('div', { class: 'mini-item' },
+      h('div', { class: 'grid3' },
+        field('Nome na NetworkTables', textInput(l.nome, (v) => { l.nome = v.trim() || 'limelight'; save(); updateLlStatus(); }, { sm: true, list: 'll-detectadas' })),
+        field('IP / host', textInput(l.host, (v) => { l.host = v.trim(); save(); }, { sm: true, placeholder: '10.96.4.11' })),
+        field('Modelo (campo de visão)', selectInput(`${l.fovH}x${l.fovV}`, FOV, (v) => { const [a, b] = v.split('x').map(Number); l.fovH = a; l.fovV = b; save(); }, { sm: true }))),
+      status,
+      list.length > 1 ? btn('Remover', () => { list.splice(i, 1); save(); render(); }, { cls: 'sm ghost danger', icon: 'trash' }) : null);
+  });
+  updateLlStatus();
+  return card('Limelights', 'limelight', 'O nome é o que aparece na interface da Limelight (padrão "limelight"; com várias, algo como "limelight-frente"). Não é o modelo: o modelo vai no campo "Modelo".',
+    dl,
     ...rows,
     btn('Adicionar Limelight', () => { list.push({ nome: `limelight-${list.length + 1}`, host: `10.${Math.floor(cfg.get('equipe') / 100)}.${cfg.get('equipe') % 100}.${11 + list.length}`, fovH: 62.5, fovV: 48.9 }); save(); render(); }, { cls: 'sm', icon: 'plus' }),
     h('div', { class: 'hint' }, `Dica: IP fixo recomendado pela Limelight: 10.${Math.floor(cfg.get('equipe') / 100)}.${cfg.get('equipe') % 100}.11 a .19.`));
+}
+
+/** Mostra, para cada Limelight configurada, se chegam dados com aquele nome. */
+function updateLlStatus() {
+  const detected = detectLimelights();
+  for (const s of llStatus) {
+    const name = s.name();
+    const ok = hasLimelight(name);
+    const others = detected.filter((t) => t !== name);
+    const key = JSON.stringify([name, ok, others, nt.connected]);
+    if (key === s.key) continue;
+    s.key = key;
+    if (ok) s.el.replaceChildren(h('span', { style: { color: 'var(--green)' } }, `✓ Recebendo dados de /${name}`));
+    else if (others.length) {
+      s.el.replaceChildren(h('span', { style: { color: 'var(--yellow)' } }, `✗ Nenhuma Limelight publica como "${name}". Na rede:`),
+        ...others.map((t) => btn(`usar "${t}"`, () => s.use(t), { cls: 'sm' })));
+    } else {
+      s.el.replaceChildren(h('span', { class: 'faint' }, nt.connected ? 'Nenhuma Limelight publicando agora (ela está ligada e na rede do robô?)' : 'Sem conexão com o robô agora.'));
+    }
+  }
 }
 
 function topicsCard() {
@@ -213,4 +244,7 @@ export default {
     render();
   },
   show() { if (root) render(); },
+  frame(now) {
+    if (!this._ll || now - this._ll > 1000) { this._ll = now; updateLlStatus(); }
+  },
 };

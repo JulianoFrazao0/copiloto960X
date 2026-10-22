@@ -446,6 +446,8 @@ class FakeRobot:
             for t_id, d, b, e in seen:
                 fid += [float(t_id), -math.degrees(b), math.degrees(e), 2.5 / (d * d), d, d + CAM_FORWARD,
                         round(min(1.0, 0.05 + 0.08 * d), 3)]
+            # mesmo formato da Limelight de verdade: 7 números por tag vista
+            add(LL + "/rawfiducials", "double[]", fid)
             span = 0.0
             if n > 1:
                 span = max(s[1] for s in seen) - min(s[1] for s in seen) + 0.5
@@ -461,6 +463,7 @@ class FakeRobot:
             add(LL + "/ty", "double", 0.0)
             add(LL + "/ta", "double", 0.0)
             add(LL + "/tid", "double", -1.0)
+            add(LL + "/rawfiducials", "double[]", [])
             empty = [0.0] * 6 + [latency + cap, 0.0, 0.0, 0.0, 0.0]
             add(LL + "/botpose_wpiblue", "double[]", empty)
             add(LL + "/botpose_orb_wpiblue", "double[]", empty)
