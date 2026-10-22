@@ -1,0 +1,73 @@
+{
+  "equipe": 9604,
+  "conexao": {
+    "modo": "sim",
+    "endereco": "10.96.4.2"
+  },
+  "pathplanner": {
+    "pasta": ""
+  },
+  "campo": {
+    "preset": "rebuilt-2026",
+    "comprimento": 16.541,
+    "largura": 8.069,
+    "imagem": null,
+    "simetria": "rotacional"
+  },
+  "robo": {
+    "largura": 0.86,
+    "comprimento": 0.86,
+    "tipo": "swerve"
+  },
+  "restricoes": {
+    "maxVelocity": 3,
+    "maxAcceleration": 3,
+    "maxAngularVelocity": 540,
+    "maxAngularAcceleration": 720
+  },
+  "topicos": {
+    "pose": "/SmartDashboard/Field/Robot",
+    "tempo": "/SmartDashboard/Match Time",
+    "bateria": "/SmartDashboard/Bateria",
+    "resetPose": "/Copiloto/ResetPose",
+    "seletorAuto": "/SmartDashboard/Auto",
+    "alertas": "/SmartDashboard/Alerts"
+  },
+  "limelights": [
+    {
+      "nome": "limelight 4",
+      "host": "10.96.4.11",
+      "fovH": 82,
+      "fovV": 56.2
+    },
+    {
+      "nome": "limelight 3G",
+      "host": "10.96.4.12",
+      "fovH": 82,
+      "fovV": 56.2
+    }
+  ],
+  "partida": {
+    "auto": 20,
+    "teleop": 140,
+    "endgame": 30
+  },
+  "gravacao": {
+    "automatica": true
+  },
+  "aparencia": {
+    "cor": "#ed0c0c",
+    "tema": "escuro"
+  },
+  "comandos": [
+    "Atirar",
+    "Coletar",
+    "Parar Coleta",
+    "Mirar"
+  ],
+  "limelightCalc": {
+    "hCam": 0.5,
+    "hAlvo": 1.124,
+    "angulo": 16.3
+  }
+}

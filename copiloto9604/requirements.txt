@@ -1,0 +1,3 @@
+# Única dependência: a NetworkTables oficial do WPILib para Python (RobotPy).
+# Sem ela o Copiloto abre só com o simulador interno.
+pyntcore>=2025.0.0

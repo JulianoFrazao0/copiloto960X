@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.4718818265924045,
+        "y": 6.161714521344199
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3911152250299046,
+        "y": 9.789487482244319
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.418819387335526,
+        "y": 6.406951293361245
+      },
+      "prevControl": {
+        "x": 8.199394475179426,
+        "y": 6.399840740879187
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3,
+    "maxAcceleration": 3,
+    "maxAngularVelocity": 540,
+    "maxAngularAcceleration": 720,
+    "nominalVoltage": 12,
+    "unlimited": false
+  },
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0
+  },
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0
+  },
+  "reversed": false,
+  "folder": "sair",
+  "useDefaultConstraints": true
+}

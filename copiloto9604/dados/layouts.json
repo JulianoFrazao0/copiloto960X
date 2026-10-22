@@ -1,0 +1,366 @@
+{
+  "versao": 1,
+  "paginas": [
+    {
+      "id": "19pn3aam",
+      "nome": "Teleop",
+      "widgets": [
+        {
+          "id": "ee18xc4g",
+          "tipo": "cronometro",
+          "x": 0,
+          "y": 0,
+          "w": 5,
+          "h": 4,
+          "titulo": null,
+          "cfg": {}
+        },
+        {
+          "id": "9ikg7jsm",
+          "tipo": "numero",
+          "x": 5,
+          "y": 0,
+          "w": 3,
+          "h": 4,
+          "titulo": "Bateria",
+          "cfg": {
+            "topico": "/SmartDashboard/Bateria",
+            "unidade": "V",
+            "casas": 2,
+            "vermelhoAbaixo": 11,
+            "amareloAbaixo": 12
+          }
+        },
+        {
+          "id": "d4vt03an",
+          "tipo": "seletor",
+          "x": 8,
+          "y": 0,
+          "w": 6,
+          "h": 4,
+          "titulo": "Autônomo",
+          "cfg": {
+            "tabela": "/SmartDashboard/Auto"
+          }
+        },
+        {
+          "id": "k4hx3p9o",
+          "tipo": "booleano",
+          "x": 14,
+          "y": 0,
+          "w": 3,
+          "h": 4,
+          "titulo": "Intake",
+          "cfg": {
+            "topico": "/SmartDashboard/Intake/Tem Peça",
+            "textoV": "TEM PEÇA",
+            "textoF": "VAZIO"
+          }
+        },
+        {
+          "id": "bf7f5bzx",
+          "tipo": "booleano",
+          "x": 17,
+          "y": 0,
+          "w": 3,
+          "h": 4,
+          "titulo": "Shooter",
+          "cfg": {
+            "topico": "/SmartDashboard/Shooter/Pronto",
+            "textoV": "PRONTO",
+            "textoF": "ACELERANDO",
+            "corF": "#7c5a10",
+            "piscar": true
+          }
+        },
+        {
+          "id": "fcxwpil1",
+          "tipo": "alertas",
+          "x": 20,
+          "y": 0,
+          "w": 4,
+          "h": 9,
+          "titulo": "Alertas",
+          "cfg": {}
+        },
+        {
+          "id": "gojzkoas",
+          "tipo": "campo",
+          "x": 0,
+          "y": 4,
+          "w": 10,
+          "h": 8,
+          "titulo": "Campo",
+          "cfg": {
+            "rastro": true,
+            "visao": true
+          }
+        },
+        {
+          "id": "smfchjik",
+          "tipo": "grafico",
+          "x": 10,
+          "y": 4,
+          "w": 10,
+          "h": 5,
+          "titulo": "Shooter (RPM)",
+          "cfg": {
+            "topicos": [
+              "/SmartDashboard/Shooter/RPM",
+              "/SmartDashboard/Shooter/RPM Alvo"
+            ],
+            "janela": 10
+          }
+        },
+        {
+          "id": "yln58slj",
+          "tipo": "limelight",
+          "x": 10,
+          "y": 9,
+          "w": 5,
+          "h": 5,
+          "titulo": "Limelight",
+          "cfg": {
+            "limelight": "limelight"
+          }
+        },
+        {
+          "id": "k4oxurjp",
+          "tipo": "swerve",
+          "x": 15,
+          "y": 9,
+          "w": 5,
+          "h": 5,
+          "titulo": "Swerve",
+          "cfg": {
+            "topico": "/SmartDashboard/Swerve/Estados",
+            "vmax": 4.5
+          }
+        },
+        {
+          "id": "c0qsg6dx",
+          "tipo": "eventos",
+          "x": 20,
+          "y": 9,
+          "w": 4,
+          "h": 9,
+          "titulo": "Linha do tempo",
+          "cfg": {
+            "vigiar": [
+              "/SmartDashboard/Intake/Tem Peça"
+            ]
+          }
+        },
+        {
+          "id": "j2vzzaej",
+          "tipo": "barra",
+          "x": 0,
+          "y": 12,
+          "w": 5,
+          "h": 2,
+          "titulo": "Escalador",
+          "cfg": {
+            "topico": "/SmartDashboard/Escalador/Posição",
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "id": "nl0kjczp",
+          "tipo": "booleano",
+          "x": 5,
+          "y": 12,
+          "w": 5,
+          "h": 2,
+          "titulo": "Escalada",
+          "cfg": {
+            "topico": "/SmartDashboard/Escalador/Travado",
+            "textoV": "TRAVADO",
+            "textoF": "livre"
+          }
+        },
+        {
+          "id": "tf0goafm",
+          "tipo": "medidor",
+          "x": 0,
+          "y": 14,
+          "w": 5,
+          "h": 4,
+          "titulo": "Velocidade",
+          "cfg": {
+            "topico": "/SmartDashboard/Swerve/Velocidade",
+            "min": 0,
+            "max": 5,
+            "unidade": "m/s"
+          }
+        },
+        {
+          "id": "qgvw1ji7",
+          "tipo": "fms",
+          "x": 5,
+          "y": 14,
+          "w": 5,
+          "h": 4,
+          "titulo": "Partida",
+          "cfg": {}
+        },
+        {
+          "id": "d5jylp92",
+          "tipo": "numero",
+          "x": 10,
+          "y": 14,
+          "w": 5,
+          "h": 4,
+          "titulo": "Giroscópio",
+          "cfg": {
+            "topico": "/SmartDashboard/Gyro/Yaw",
+            "unidade": "°",
+            "casas": 1
+          }
+        },
+        {
+          "id": "t3u8p8h4",
+          "tipo": "botao",
+          "x": 15,
+          "y": 14,
+          "w": 5,
+          "h": 4,
+          "titulo": null,
+          "cfg": {
+            "topico": "/SmartDashboard/Zerar Giro",
+            "texto": "Zerar giroscópio",
+            "modo": "pulso"
+          }
+        }
+      ]
+    },
+    {
+      "id": "jpctsblk",
+      "nome": "Pit",
+      "widgets": [
+        {
+          "id": "l14dzirj",
+          "tipo": "rotulo",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 1,
+          "titulo": null,
+          "cfg": {
+            "texto": "Antes de ir para a fila",
+            "tamanho": 18
+          }
+        },
+        {
+          "id": "jef515tz",
+          "tipo": "checklist",
+          "x": 0,
+          "y": 1,
+          "w": 7,
+          "h": 9,
+          "titulo": "Checklist pré-partida",
+          "cfg": {
+            "feitos": []
+          }
+        },
+        {
+          "id": "nvq3sw7d",
+          "tipo": "numero",
+          "x": 7,
+          "y": 1,
+          "w": 4,
+          "h": 4,
+          "titulo": "Bateria",
+          "cfg": {
+            "topico": "/SmartDashboard/Bateria",
+            "unidade": "V",
+            "casas": 2,
+            "vermelhoAbaixo": 12.3,
+            "verdeAcima": 12.5
+          }
+        },
+        {
+          "id": "uek08gy4",
+          "tipo": "seletor",
+          "x": 11,
+          "y": 1,
+          "w": 6,
+          "h": 4,
+          "titulo": "Autônomo",
+          "cfg": {
+            "tabela": "/SmartDashboard/Auto"
+          }
+        },
+        {
+          "id": "j198ciui",
+          "tipo": "alertas",
+          "x": 17,
+          "y": 1,
+          "w": 7,
+          "h": 9,
+          "titulo": "Alertas",
+          "cfg": {}
+        },
+        {
+          "id": "7gdyg8gl",
+          "tipo": "fms",
+          "x": 7,
+          "y": 5,
+          "w": 10,
+          "h": 3,
+          "titulo": "Partida",
+          "cfg": {}
+        },
+        {
+          "id": "e0k62kgn",
+          "tipo": "camera",
+          "x": 7,
+          "y": 8,
+          "w": 10,
+          "h": 8,
+          "titulo": "Câmera da Limelight",
+          "cfg": {}
+        },
+        {
+          "id": "rfmk8p34",
+          "tipo": "eventos",
+          "x": 17,
+          "y": 10,
+          "w": 7,
+          "h": 6,
+          "titulo": "Linha do tempo",
+          "cfg": {}
+        },
+        {
+          "id": "7cxi33ca",
+          "tipo": "botao",
+          "x": 0,
+          "y": 10,
+          "w": 7,
+          "h": 2,
+          "titulo": null,
+          "cfg": {
+            "topico": "/SmartDashboard/Zerar Giro",
+            "texto": "Zerar giroscópio",
+            "modo": "pulso"
+          }
+        },
+        {
+          "id": "fuimfk0b",
+          "tipo": "deslizante",
+          "x": 0,
+          "y": 12,
+          "w": 7,
+          "h": 2,
+          "titulo": "Ajuste fino do shooter (RPM)",
+          "cfg": {
+            "topico": "/SmartDashboard/Ajuste Shooter",
+            "min": -500,
+            "max": 500,
+            "passo": 10
+          }
+        }
+      ]
+    }
+  ]
+}
