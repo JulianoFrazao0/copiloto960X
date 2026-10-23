@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Copiloto: gravações de partidas (arquivos grandes) e lixeira
+copiloto9604/dados/gravacoes/
+copiloto9604/dados/lixeira/
+
+# pacotes gerados para enviar (o conteúdo já está no git)
+*.zip
